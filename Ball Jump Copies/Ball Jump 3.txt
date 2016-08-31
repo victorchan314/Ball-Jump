@@ -1,0 +1,622 @@
+--the screen is 480 x 320
+
+local physics = require("physics")
+physics.start( true )
+gvvconstant = 3000
+physics.setGravity( display.contentWidth * display.contentWidth, display.contentHeight * gvvconstant / 7840 )
+
+print( physics.getGravity() )
+
+level1music = audio.loadSound("Game Song Level 1.mp3")
+
+
+main = display.newGroup()
+
+start = display.newRoundedRect( main, 0, 0, display.contentWidth / 3 * 2, display.contentHeight / 64 * 15, display.contentHeight / 64 )
+start:setReferencePoint( display.CenterReferencePoint )
+start.x = display.contentWidth / 2
+start.y = display.contentHeight / 32 * 7
+start:setFillColor( 255, 255, 255 )
+
+starttext = display.newText( main, "START", 0, 0, "Comic Sans Ms", display.contentHeight / 4 )
+starttext:setReferencePoint( display.CenterReferencePoint )
+starttext.x = display.contentWidth / 2
+starttext.y = display.contentHeight / 64 * 11
+starttext:setTextColor( 0, 0, 0 )
+
+instructionsbutton = display.newRoundedRect( main, 0, 0, display.contentWidth / 3 * 2, display.contentHeight / 64 * 15, display.contentHeight / 64 )
+instructionsbutton:setReferencePoint( display.CenterReferencePoint )
+instructionsbutton.x = display.contentWidth / 2
+instructionsbutton.y = display.contentHeight / 2
+instructionsbutton:setFillColor( 255, 255, 255 )
+
+instructionsbuttontext = display.newText( main, "How to Play", 0, 0, "Comic Sans Ms", display.contentHeight / 32 * 5 )
+instructionsbuttontext:setReferencePoint( display.CenterReferencePoint )
+instructionsbuttontext.x = display.contentWidth / 2
+instructionsbuttontext.y = display.contentHeight / 64 * 29
+instructionsbuttontext:setTextColor( 0, 0, 0 )
+
+
+levels = display.newGroup()
+levels.isVisible = false
+
+levelstomenu = display.newRoundedRect( levels, 0, 0, display.contentWidth / 4 * 3, display.contentHeight / 16 * 3, display.contentHeight / 64 )
+levelstomenu:setReferencePoint( display.CenterReferencePoint )
+levelstomenu.x = display.contentWidth / 2
+levelstomenu.y = display.contentHeight / 5 * 4
+levelstomenu:setFillColor( 255, 255, 255 )
+
+levelstomenutext = display.newText( levels, "Back to Menu", 0, 0, "Comic Sans Ms", display.contentHeight / 32 * 5 )
+levelstomenutext:setReferencePoint( display.CenterReferencePoint )
+levelstomenutext.x = display.contentWidth / 2
+levelstomenutext.y = display.contentHeight / 4 * 3
+levelstomenutext:setTextColor( 0, 0, 0 )
+
+level1 = display.newRoundedRect( levels, 0, 0, display.contentWidth / 5, display.contentHeight / 2, display.contentHeight / 64 )
+level1:setReferencePoint( display.CenterReferencePoint )
+level1.x = display.contentWidth / 5
+level1.y = display.contentHeight / 5 * 2
+level1:setFillColor( 255, 255, 255 )
+
+level1text = display.newText( levels, "1", 0, 0, "Comic Sans Ms", display.contentHeight / 4 )
+level1text:setReferencePoint( display.CenterReferencePoint )
+level1text.x = display.contentWidth / 5
+level1text.y = display.contentHeight / 5 * 2
+level1text:setTextColor( 0, 0, 0 )
+
+
+instructions = display.newGroup()
+instructions.isVisible = false
+--line 70
+instructions1 = display.newText( instructions, "Tap the pink circle to jump over", 0, 0, "Comic Sans Ms", display.contentWidth / 20 )
+instructions1:setReferencePoint( display.CenterReferencePoint )
+instructions1.x = display.contentWidth / 2
+instructions1.y = display.contentHeight / 32 * 7
+instructions2 = display.newText( instructions, "obstacles. Green circles are safe to", 0, 0, "Comic Sans Ms", display.contentWidth / 20 )
+instructions2:setReferencePoint( display.CenterReferencePoint )
+instructions2.x = display.contentWidth / 2
+instructions2.y = display.contentHeight / 32 * 10
+instructions3 = display.newText( instructions, "jump on top of. Red circles are not.", 0, 0, "Comic Sans Ms", display.contentWidth / 20 )
+instructions3:setReferencePoint( display.CenterReferencePoint )
+instructions3.x = display.contentWidth / 2
+instructions3.y = display.contentHeight / 32 * 13
+instructions4 = display.newText( instructions, "Colliding with a red circle or the side", 0, 0, "Comic Sans Ms", display.contentWidth / 20 )
+instructions4:setReferencePoint( display.CenterReferencePoint )
+instructions4.x = display.contentWidth / 2
+instructions4.y = display.contentHeight / 32 * 16
+instructions5 = display.newText( instructions, "of any obstacle will result in a loss.", 0, 0, "Comic Sans Ms", display.contentWidth / 20 )
+instructions5:setReferencePoint( display.CenterReferencePoint )
+instructions5.x = display.contentWidth / 2
+instructions5.y = display.contentHeight / 32 * 19
+
+instructionstomenu = display.newRoundedRect( instructions, 0, 0, display.contentWidth / 4 * 3, display.contentHeight / 16 * 3, display.contentHeight / 64 )
+instructionstomenu:setReferencePoint( display.CenterReferencePoint )
+instructionstomenu.x = display.contentWidth / 2
+instructionstomenu.y = display.contentHeight / 5 * 4
+instructionstomenu:setFillColor( 255, 255, 255 )
+
+instructionstomenutext = display.newText( instructions, "Back to Menu", 0, 0, "Comic Sans Ms", display.contentHeight / 32 * 5 )
+instructionstomenutext:setReferencePoint( display.CenterReferencePoint )
+instructionstomenutext.x = display.contentWidth / 2
+instructionstomenutext.y = display.contentHeight / 4 * 3
+instructionstomenutext:setTextColor( 0, 0, 0 )
+
+
+game = display.newGroup()
+game.isVisible = false
+
+background = display.newRect( game, 0, 0, display.contentWidth, display.contentHeight )
+background:setFillColor( 0, 0, 0 )
+
+circlecollisionfilter = { categoryBits = 1, maskBits = 6 }
+redcirclecollisionfilter = { categoryBits = 2, maskBits = 1 }
+linefilter = { categoryBits = 4, maskBits = 1 }
+
+blackline = display.newRect( game, display.contentWidth / 16 * 5 - display.contentHeight / 16 - 9, 0, 3, display.contentHeight )
+blackline:setFillColor( 0, 0, 0, 0 )
+physics.addBody( blackline, { density = 1.0, friction = 0, bounce = 0, filter = linefilter } )
+blackline.bodyType = "static"
+
+blacklineguard = display.newRect( game, display.contentWidth / 16 * 5 + display.contentHeight / 16, 0, 3, display.contentHeight )
+blacklineguard:setFillColor( 0, 0, 0, 0 )
+physics.addBody( blacklineguard, { density = 1.0, friction = 0, bounce = 0, filter = linefilter } )
+blacklineguard.bodyType = "static"
+
+redcircle = display.newCircle( game, display.contentWidth / 4 * 5, display.contentHeight / 16 * 11, display.contentHeight / 16 )
+redcircle:setFillColor( 255, 0, 0 )
+physics.addBody( redcircle, { density = 1.0, friction = 0, bounce = 0, radius = display.contentHeight / 16, filter = redcirclecollisionfilter } )
+redcircle.bodyType = "static"
+
+redcircledown1 = display.newCircle( game, display.contentWidth / 4 * 5 + display.contentHeight / 8, display.contentHeight / 16 * 11, display.contentHeight / 16 )
+redcircledown1:setFillColor( 255, 0, 0 )
+physics.addBody( redcircledown1, { density = 1.0, friction = 0, bounce = 0, radius = display.contentHeight / 16, filter = redcirclecollisionfilter } )
+redcircledown1.bodyType = "static"
+
+redcircledown2 = display.newCircle( game, display.contentWidth / 4 * 5 + display.contentHeight / 4, display.contentHeight / 16 * 11, display.contentHeight / 16 )
+redcircledown2:setFillColor( 255, 0, 0 )
+physics.addBody( redcircledown2, { density = 1.0, friction = 0, bounce = 0, radius = display.contentHeight / 16, filter = redcirclecollisionfilter } )
+redcircledown2.bodyType = "static"
+
+redcircledown3 = display.newCircle( game, display.contentWidth / 4 * 5 + display.contentHeight / 8 * 3, display.contentHeight / 16 * 11, display.contentHeight / 16 )
+redcircledown3:setFillColor( 255, 0, 0 )
+physics.addBody( redcircledown3, { density = 1.0, friction = 0, bounce = 0, radius = display.contentHeight / 16, filter = redcirclecollisionfilter } )
+redcircledown3.bodyType = "static"
+
+redcircleright1 = display.newCircle( game, display.contentWidth / 4 * 5, display.contentHeight / 16 * 9, display.contentHeight / 16 )
+redcircleright1:setFillColor( 255, 0, 0 )
+physics.addBody( redcircleright1, { density = 1.0, friction = 0, bounce = 0, radius = display.contentHeight / 16, filter = redcirclecollisionfilter } )
+redcircleright1.bodyType = "static"
+--line 149
+redcircleright2 = display.newCircle( game, display.contentWidth / 4 * 5, display.contentHeight / 16 * 7, display.contentHeight / 16 )
+redcircleright2:setFillColor( 255, 0, 0 )
+physics.addBody( redcircleright2, { density = 1.0, friction = 0, bounce = 0, radius = display.contentHeight / 16, filter = redcirclecollisionfilter } )
+redcircleright2.bodyType = "static"
+
+redcircleright3 = display.newCircle( game, display.contentWidth / 4 * 5, display.contentHeight / 16 * 5, display.contentHeight / 16 )
+redcircleright3:setFillColor( 255, 0, 0 )
+physics.addBody( redcircleright3, { density = 1.0, friction = 0, bounce = 0, radius = display.contentHeight / 16, filter = redcirclecollisionfilter } )
+redcircleright3.bodyType = "static"
+
+redcircledown1right1 = display.newCircle( game, display.contentWidth / 4 * 5 + display.contentHeight / 8, display.contentHeight / 16 * 9, display.contentHeight / 16 )
+redcircledown1right1:setFillColor( 255, 0, 0 )
+physics.addBody( redcircledown1right1, { density = 1.0, friction = 0, bounce = 0, radius = display.contentHeight / 16, filter = redcirclecollisionfilter } )
+redcircledown1right1.bodyType = "static"
+
+greencircle = display.newCircle( game, display.contentWidth / 4 * 5, display.contentHeight / 16 * 11, display.contentHeight / 16 )
+greencircle:setFillColor( 0, 255, 0 )
+physics.addBody( greencircle, { density = 1.0, friction = 0, bounce = 0, radius = display.contentHeight / 16, filter = redcirclecollisionfilter } )
+greencircle.bodyType = "static"
+
+circle = display.newCircle( game, display.contentWidth / 16 * 5, display.contentHeight / 16 * 11, display.contentHeight / 16 )
+circle:setFillColor( 255, 255, 0 )
+physics.addBody( circle, { density = 1.0, friction = 0, bounce = 0, radius = display.contentHeight / 16, filter = circlecollisionfilter } )
+circle.bodyType = "dynamic"
+
+line = display.newRect( game, 0, display.contentHeight / 4 * 3 - 1, display.contentWidth, 3 )
+line:setFillColor( 255, 255, 255 )
+physics.addBody( line, { density = 1.0, friction = 0, bounce = 0, filter = linefilter } )
+line.bodyType = "static"
+
+jumper = display.newCircle( game, display.contentWidth / 12 * 11, display.contentHeight / 8 * 7, display.contentHeight / 32 * 3 )
+jumper:setFillColor( 255, 0, 255 )
+
+--whitelinelength_level
+--length corresponds to display.contentWidth, which = 1
+--blackline level is 0, then goes up to 1 like a ruler/number line
+--fractions always words, never with symbols / or .
+
+whiteline1_1 = display.newRect( game, display.contentWidth / 4 * 5, display.contentHeight / 8 * 5 - 1, display.contentWidth, 3 )
+whiteline1_1:setFillColor( 255, 255, 255 )
+whiteline1_1:setReferencePoint( display.TopLeftReferencePoint )
+physics.addBody( whiteline1_1, { density = 1.0, friction = 0, bounce = 0, filter = linefilter } )
+whiteline1_1.bodyType = "static"
+
+whitelinehalf_1 = display.newRect( game, display.contentWidth / 4 * 5, display.contentHeight / 8 * 5 - 1, display.contentWidth / 2, 3 )
+whitelinehalf_1:setFillColor( 255, 255, 255 )
+whitelinehalf_1:setReferencePoint( display.TopLeftReferencePoint )
+physics.addBody( whitelinehalf_1, { density = 1.0, friction = 0, bounce = 0, filter = linefilter } )
+whitelinehalf_1.bodyType = "static"
+--line 199
+whiteline1_2 = display.newRect( game, display.contentWidth / 4 * 5, display.contentHeight / 8 * 4 - 1, display.contentWidth, 3 )
+whiteline1_2:setFillColor( 255, 255, 255 )
+whiteline1_2:setReferencePoint( display.TopLeftReferencePoint )
+physics.addBody( whiteline1_2, { density = 1.0, friction = 0, bounce = 0, filter = linefilter } )
+whiteline1_2.bodyType = "static"
+
+
+lost = display.newGroup()
+lost.isVisible = false
+
+losttext = display.newText( lost, "Sorry, You Lost", 0, 0, "Comic Sans Ms", display.contentHeight / 32 * 5 )
+losttext:setReferencePoint( display.CenterReferencePoint )
+losttext.x = display.contentWidth / 2
+losttext.y = display.contentHeight / 5
+losttext:setTextColor( 255, 255, 255 )
+
+startoverbutton = display.newRoundedRect( lost, 0, 0, display.contentWidth / 3 * 2,display.contentHeight / 64 * 15,  display.contentHeight / 64 )
+startoverbutton:setReferencePoint( display.CenterReferencePoint )
+startoverbutton.x = display.contentWidth / 2
+startoverbutton.y = display.contentHeight / 2
+startoverbutton:setFillColor( 255, 255, 255 )
+
+startoverbuttontext = display.newText( lost, "Start Over", 0, 0, "Comic Sans Ms", display.contentHeight / 32 * 5 )
+startoverbuttontext:setReferencePoint( display.CenterReferencePoint )
+startoverbuttontext.x = display.contentWidth / 2
+startoverbuttontext.y = display.contentHeight / 64 * 29
+startoverbuttontext:setTextColor( 0, 0, 0 )
+
+
+function start:tap( event )
+	levels.isVisible = true
+	main.isVisible = false
+	game.isVisible = false
+	lost.isVisible = false
+end
+start:addEventListener( "tap", start )
+
+
+function levelstomenu:tap( event )
+	levels.isVisible = false
+	main.isVisible = true
+	game.isVisible = false
+	lost.isVisible = false
+end
+levelstomenu:addEventListener( "tap", levelstomenu )
+--line 245
+
+
+function level1:tap( event )
+	levels.isVisible = false
+	game.isVisible = true
+	main.isVisible = false
+	lost.isVisible = false
+	audio.play(level1music)
+	timer.performWithDelay( 0, circlereset )
+	timer.performWithDelay( 0, redcirclereset )
+	timer.performWithDelay( 0, redcircledown1reset )
+	timer.performWithDelay( 0, redcircledown2reset )
+	timer.performWithDelay( 0, redcircledown3reset )
+	timer.performWithDelay( 0, redcircleright1reset )
+	timer.performWithDelay( 0, redcircleright2reset )
+	timer.performWithDelay( 0, redcircleright3reset )
+	timer.performWithDelay( 0, redcircledown1right1reset )
+	timer.performWithDelay( 0, greencirclereset )
+	timer.performWithDelay( 0, whiteline1_1reset )
+	timer.performWithDelay( 0, whitelinehalf_1reset )
+	timer.performWithDelay( 0, whiteline1_2reset )
+	rc1 = transition.to( redcircle, { time = 2000, delay = 1000, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 3005, redcirclereset )
+	rc2 = transition.to( redcircle, { time = 2000, delay = 3500, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 5505, redcirclereset )
+	rcd11 = transition.to( redcircledown1, { time = 2000, delay = 3500, x = display.contentWidth / 2 * -1 + display.contentHeight / 8 } )
+	timer.performWithDelay( 5505, redcircledown1reset )
+	rcr11 = transition.to( redcircleright1, { time = 2000, delay = 6500, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 8505, redcircleright1reset )
+	gc1 = transition.to( greencircle, { time = 2000, delay = 9500, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 11505, greencirclereset )
+	rcd21 = transition.to( redcircledown2, { time = 2000, delay = 9500, x = display.contentWidth / 2 * -1 + display.contentHeight / 4 } )
+	timer.performWithDelay( 11505, redcircledown2reset )
+	rcd31 = transition.to( redcircledown3, { time = 2000, delay = 9500, x = display.contentWidth / 2 * -1 + display.contentHeight / 8 * 3 } )
+	timer.performWithDelay( 11505, redcircledown3reset )
+	rc3 = transition.to( redcircle, { time = 2000, delay = 13000, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 15005, redcirclereset )
+	rcd12 = transition.to( redcircledown1, { time = 2000, delay = 13000, x = display.contentWidth / 2 * -1 + display.contentHeight / 8 } )
+	timer.performWithDelay( 15005, redcircledown1reset )
+	rcd22 = transition.to( redcircledown2, { time = 2000, delay = 14000, x = display.contentWidth / 2 * -1 + display.contentHeight / 4 } )
+	timer.performWithDelay( 16005, redcircledown2reset )
+	rcd32 = transition.to( redcircledown3, { time = 2000, delay = 15000, x = display.contentWidth / 2 * -1 + display.contentHeight / 8 * 3 } )
+	timer.performWithDelay( 17005, redcircledown3reset )
+	rc4 = transition.to( redcircle, { time = 2000, delay = 16000, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 18005, redcirclereset )
+	rcd13 = transition.to( redcircledown1, { time = 2000, delay = 16000, x = display.contentWidth / 2 * -1 + display.contentHeight / 8 } )
+	timer.performWithDelay( 18005, redcircledown1reset )
+	rcd23 = transition.to( redcircledown2, { time = 2000, delay = 17000, x = display.contentWidth / 2 * -1 + display.contentHeight / 4 } )
+	timer.performWithDelay( 19005, redcircledown2reset )
+	rcr12 = transition.to( redcircleright1, { time = 2000, delay = 18000, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 20005, redcircleright1reset )
+	rcd33 = transition.to( redcircledown3, { time = 2000, delay = 19000, x = display.contentWidth / 2 * -1 + display.contentHeight / 8 * 3 } )
+	timer.performWithDelay( 21005, redcircledown3reset )
+	gc2 = transition.to( greencircle, { time = 2000, delay = 20000, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 22005, greencirclereset )
+	rc5 = transition.to( redcircle, { time = 2000, delay = 22000, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 24005, redcirclereset )
+	rcd14 = transition.to( redcircledown1, { time = 2000, delay = 22350, x = display.contentWidth / 2 * -1 + display.contentHeight / 8 } )
+	timer.performWithDelay( 24355, redcircledown1reset )
+	rcd24 = transition.to( redcircledown2, { time = 2000, delay = 22700, x = display.contentWidth / 2 * -1 + display.contentHeight / 4 } )
+	timer.performWithDelay( 24705, redcircledown2reset )
+	rcd34 = transition.to( redcircledown3, { time = 2000, delay = 23050, x = display.contentWidth / 2 * -1 + display.contentHeight / 8 * 3 } )
+	timer.performWithDelay( 25055, redcircledown3reset )
+	gc3 = transition.to( greencircle, { time = 2000, delay = 23500, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 25505, greencirclereset )
+	wl1_11 = transition.to( whiteline1_1, { time = 20000 / 7, delay = 23500, x = display.contentWidth / 4 * 5 * -1 } )
+	timer.performWithDelay( 24000 + ( 20000 / 7 ) + 5, whiteline1_1reset )
+	rcr13 = transition.to( redcircleright1, { time = 2000, delay = 23850, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 25855, redcircleright1reset )
+	rcr21 = transition.to( redcircleright2, { time = 2000, delay = 24400, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 26405, redcircleright2reset )
+	rc6 = transition.to( redcircle, { time = 2000, delay = 25000, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 27005, redcirclereset )
+	rcd15 = transition.to( redcircledown1, { time = 2000, delay = 26000, x = display.contentWidth / 2 * -1 + display.contentHeight / 8 } )
+	timer.performWithDelay( 28005, redcircledown1reset )
+	gc4 = transition.to( greencircle, { time = 2000, delay = 28000, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 28005, greencirclereset )
+	rcr14 = transition.to( redcircleright1, { time = 2000, delay = 28250, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 28255, redcircleright1reset )
+	wlhalf_11 = transition.to( whitelinehalf_1, { time = 15000 / 7, delay = 30000, x = display.contentWidth / 4 * 5 * -1 / 2 } )
+	timer.performWithDelay( 30000 + ( 15000 / 7 ) + 5, whitelinehalf_1reset )
+	rc7 = transition.to( redcircle, { time = 2000, delay = 30000, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 30005, redcirclereset )
+	wl1_21 = transition.to( whiteline1_2, { time = 20000 / 7, delay = 30500, x = display.contentWidth / 4 * 5 * -1 } )
+	timer.performWithDelay( 30500 + ( 20000 / 7 ) + 5, whiteline1_2reset )
+	rcr31 = transition.to( redcircleright3, { time = 2000, delay = 30850, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 32855, redcircleright2reset )
+	rcr22 = transition.to( redcircleright2, { time = 2000, delay = 31300, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 33305, redcircleright2reset )
+	rcd16 = transition.to( redcircledown1, { time = 2000, delay = 30500, x = display.contentWidth / 2 * -1 + display.contentHeight / 8 } )
+	timer.performWithDelay( 32505, redcircledown1reset )
+	rcd25 = transition.to( redcircledown2, { time = 2000, delay = 30500, x = display.contentWidth / 2 * -1 + display.contentHeight / 4 } )
+	timer.performWithDelay( 32505, redcircledown2reset )
+	wl1_12 = transition.to( whiteline1_1, { time = 20000 / 7, delay = 31500, x = display.contentWidth / 4 * 5 * -1 } )
+	timer.performWithDelay( 33500 + ( 20000 / 7 ) + 5, whiteline1_1reset )
+	rcd1r1 = transition.to( redcircledown1right1, { time = 2000, delay = 31750, x = display.contentWidth / 2 * -1 + display.contentHeight / 8 } )
+	timer.performWithDelay( 33755, redcircledown1right1reset )
+	rcr15 = transition.to( redcircleright1, { time = 2000, delay = 32000, x = display.contentWidth / 2 * -1 } )
+	timer.performWithDelay( 34005, redcircleright1reset )
+end
+level1:addEventListener( "tap", level1 )
+
+
+--the speed of the balls is 7/4/2 = ⅞ screen per second
+--rc1, rc2, rc3, rc4, rc5, rc6, rc7
+--rcd11, rcd12, rcd13, rcd14, rcd15, rcd16
+--rcd21, rcd22, rcd23, rcd24, rcd25
+--rcd31, rcd32, rcd33, rcd34
+--rcr11, rcr12, rcr13, rcr14, rcr15
+--rcr21, rcr22
+--rcr31
+--rcd1r1
+--gc1, gc2, gc3, gc4
+--wl1_11, wl1_12
+--wlhalf_11
+--wl1_21
+
+
+function circlereset( event )
+	transition.to( circle, { time = 0, x = display.contentWidth / 16 * 5, y = display.contentHeight / 16 * 11 } )
+	circle:setLinearVelocity( 0, 0 )
+end
+
+
+function greencirclereset( event )
+	transition.to( greencircle, { time = 0, x = display.contentWidth / 4 * 5 } )
+	greencircle:setLinearVelocity( 0, 0 )
+end
+
+
+function redcirclereset( event )
+	transition.to( redcircle, { time = 0, x = display.contentWidth / 4 * 5 } )
+	redcircle:setLinearVelocity( 0, 0 )
+end
+
+
+function redcircledown1reset( event )
+	transition.to( redcircledown1, { time = 0, x = display.contentWidth / 4 * 5 + display.contentHeight / 8 } )
+	redcircledown1:setLinearVelocity( 0, 0 )
+end
+
+
+function redcircledown2reset( event )
+	transition.to( redcircledown2, { time = 0, x = display.contentWidth / 4 * 5 + display.contentHeight / 4 } )
+	redcircledown2:setLinearVelocity( 0, 0 )
+end
+
+
+function redcircledown3reset( event )
+	transition.to( redcircledown3, { time = 0, x = display.contentWidth / 4 * 5 + display.contentHeight / 8 * 3 } )
+	redcircledown3:setLinearVelocity( 0, 0 )
+end
+
+
+function redcircleright1reset( event )
+	transition.to( redcircleright1, { time = 0, x = display.contentWidth / 4 * 5 } )
+	redcircleright1:setLinearVelocity( 0, 0 )
+end
+
+
+function redcircleright2reset ( event )
+	transition.to( redcircleright2, { time = 0, x = display.contentWidth / 4 * 5 } )
+	redcircleright2:setLinearVelocity( 0, 0 )
+end
+
+
+function redcircleright3reset ( event )
+	transition.to( redcircleright3, { time = 0, x = display.contentWidth / 4 * 5 } )
+	redcircleright3:setLinearVelocity( 0, 0 )
+end
+
+
+function redcircledown1right1reset ( event )
+	transition.to( redcircledown1right1, { time = 0, x = display.contentWidth / 4 * 5 + display.contentHeight / 8 } )
+	redcircledown1right1:setLinearVelocity( 0, 0 )
+end
+
+
+function whiteline1_1reset( event )
+	transition.to( whiteline1_1, { time = 0, x = display.contentWidth / 4 * 5 } )
+	whiteline1_1:setLinearVelocity( 0, 0 )
+end
+
+
+function whitelinehalf_1reset( event )
+	transition.to( whitelinehalf_1, { time = 0, x = display.contentWidth / 4 * 5 } )
+	whitelinehalf_1:setLinearVelocity( 0, 0 )
+end
+
+
+function whiteline1_2reset( event )
+	transition.to( whiteline1_2, { time = 0, x = display.contentWidth / 4 * 5 } )
+	whiteline1_2:setLinearVelocity( 0, 0 )
+end
+
+
+function instructionsbutton:tap( event )
+	main.isVisible = false
+	instructions.isVisible = true
+end
+instructionsbutton:addEventListener( "tap", instructionsbutton )
+
+
+function instructionstomenu:tap( event )
+	main.isVisible = true
+	instructions.isVisible = false
+end
+instructionstomenu:addEventListener( "tap", instructionstomenu )
+
+
+function startoverbutton:tap( event )
+	levels.isVisible = true
+	lost.isVisible = false
+	main.isVisible = false
+	game.isVisible = false
+end
+startoverbutton:addEventListener( "tap", startoverbutton )
+
+
+function jumper:touch( event )
+jumper.isVisible = false
+circle:setLinearVelocity( 0, display.contentHeight * gvvconstant / 1120 * -1 )
+background:setFillColor( math.random( 0, 200 ), math.random( 0, 255 ), math.random( 0, 255 ) )
+circle:setFillColor( math.random( 0, 255 ), math.random( 0, 255 ), math.random( 0, 255 ) )
+line:setFillColor( math.random( 0, 255 ), math.random( 0, 255 ), math.random( 0, 255 ) )
+jumper:setFillColor( math.random( 0, 255 ), math.random( 0, 255 ), math.random( 0, 255 ) )
+end
+jumper:addEventListener( "touch", jumper )
+
+
+function reappear( event )
+	if ( event.phase == "began" ) then
+	jumper.isVisible = true
+	end
+end
+Runtime:addEventListener( "collision", reappear )
+
+
+function gameover( event )
+	lost.isVisible = true
+	game.isVisible = false
+	main.isVisible = false
+	levels.isVisible = false
+	audio.stop(level1music)
+	transition.cancel( rc1 )
+	transition.cancel( rc2 )
+	transition.cancel( rc3 )
+	transition.cancel( rc4 )
+	transition.cancel( rc5 )
+	transition.cancel( rc6 )
+	transition.cancel( rc7 )
+	transition.cancel( rcd11 )
+	transition.cancel( rcd12 )
+	transition.cancel( rcd13 )
+	transition.cancel( rcd14 )
+	transition.cancel( rcd15 )
+	transition.cancel( rcd16 )
+	transition.cancel( rcd21 )
+	transition.cancel( rcd22 )
+	transition.cancel( rcd23 )
+	transition.cancel( rcd24 )
+	transition.cancel( rcd25 )
+	transition.cancel( rcd31 )
+	transition.cancel( rcd32 )
+	transition.cancel( rcd33 )
+	transition.cancel( rcd34 )
+	transition.cancel( rcr11 )
+	transition.cancel( rcr12 )
+	transition.cancel( rcr13 )
+	transition.cancel( rcr14 )
+	transition.cancel( rcr15 )
+	transition.cancel( rcr21 )
+	transition.cancel( rcr22 )
+	transition.cancel( rcr31 )
+	transition.cancel( rcd1r1 )
+	transition.cancel( gc1 )
+	transition.cancel( gc2 )
+	transition.cancel( gc3 )
+	transition.cancel( gc4 )
+	transition.cancel( wl1_11 )
+	transition.cancel( wl1_12 )
+	transition.cancel( wlhalf_11 )
+	transition.cancel( wl1_21 )
+	timer.performWithDelay( 0, circlereset )
+	timer.performWithDelay( 0, redcirclereset )
+	timer.performWithDelay( 0, redcircledown1reset )
+	timer.performWithDelay( 0, redcircledown2reset )
+	timer.performWithDelay( 0, redcircledown3reset )
+	timer.performWithDelay( 0, redcircleright1reset )
+	timer.performWithDelay( 0, redcircleright2reset )
+	timer.performWithDelay( 0, redcircleright3reset )
+	timer.performWithDelay( 0, redcircledown1right1reset )
+	timer.performWithDelay( 0, greencirclereset )
+	timer.performWithDelay( 0, whiteline1_1reset )
+	timer.performWithDelay( 0, whitelinehalf_1reset )
+	timer.performWithDelay( 0, whiteline1_2reset )
+end
+
+
+function blackline:collision( event )
+if ( event.phase == "began" ) then
+	timer.performWithDelay( 0, gameover )
+end
+end
+blackline:addEventListener( "collision", blackline )
+
+
+function redcircle:collision( event )
+if ( event.phase == "began" ) then
+	timer.performWithDelay( 0, gameover )
+end
+end
+redcircle:addEventListener( "collision", redcircle )
+
+
+function redcircledown1:collision( event )
+if ( event.phase == "began" ) then
+	timer.performWithDelay( 0, gameover )
+end
+end
+redcircledown1:addEventListener( "collision", redcircledown1 )
+
+
+function redcircledown2:collision( event )
+if ( event.phase == "began" ) then
+	timer.performWithDelay( 0, gameover )
+end
+end
+redcircledown2:addEventListener( "collision", redcircledown2 )
+
+
+function redcircledown3:collision( event )
+if ( event.phase == "began" ) then
+	timer.performWithDelay( 0, gameover )
+end
+end
+redcircledown3:addEventListener( "collision", redcircledown3 )
+
+
+function redcircleright1:collision( event )
+if ( event.phase == "began" ) then
+	timer.performWithDelay( 0, gameover )
+end
+end
+redcircleright1:addEventListener( "collision", redcircleright1 )
+
+
+function redcircleright2:collision( event )
+if ( event.phase == "began" ) then
+	timer.performWithDelay( 0, gameover )
+end
+end
+redcircleright2:addEventListener( "collision", redcircleright2 )
+
+
+function redcircleright3:collision( event )
+if ( event.phase == "began" ) then
+	timer.performWithDelay( 0, gameover )
+end
+end
+redcircleright3:addEventListener( "collision", redcircleright3 )
+
+
+function redcircledown1right1:collision( event )
+if ( event.phase == "began" ) then
+	timer.performWithDelay( 0, gameover )
+end
+end
+redcircledown1right1:addEventListener( "collision", redcircledown1right1 )
+
+
+
+
+
+
+
+
